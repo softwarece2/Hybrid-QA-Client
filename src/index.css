@@ -1,0 +1,469 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap'); */
+/* @import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100&display=swap"); */
+/* @import url("https://fonts.googleapis.com/css2?family=Didact+Gothic&display=swap"); */
+/* @import url("https://fonts.googleapis.com/css2?family=Poppins:
+wght@200;300;400;500;600;700;800;900&display=swap"); */
+
+a.hover {
+  color: unset !important;
+}
+a {
+  color: unset !important;
+}
+p {
+  margin: unset;
+  margin: unset;
+}
+
+html {
+  margin: 0;
+  height: 100%;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  font-size: unset;
+}
+body {
+  margin: 0px;
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(180, 180, 180);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(139, 139, 139);
+}
+.divPadding div {
+  justify-content: center;
+  margin: 4px 0px;
+}
+iframe {
+  /* display: none !important; */
+}
+/* ::selection {
+  color: rgba(255, 0, 0, 0.472);
+  background-color: rgba(255, 255, 0, 0.54);
+} */
+p.print-p {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  color: black;
+  font-size: 0.875rem;
+}
+@page {
+  size: auto;
+  margin: 9mm 8mm;
+}
+
+@media print {
+  .sign-container {
+    break-inside: avoid;
+  }
+}
+
+.ant-upload.ant-upload-select-picture-card {
+  margin-right: 0;
+  margin-bottom: 0;
+  height: 60px;
+  /* max-width: 200px; */
+  width: 100%;
+}
+.ant-upload-list-picture-card-container {
+  padding-bottom: 8px;
+}
+
+.ant-picker:hover,
+.ant-picker-focused {
+  border-color: #9d378e;
+}
+.ant-picker-focused {
+  box-shadow: 0 0 0 2px rgba(143, 24, 255, 0.2);
+}
+.ant-picker-range .ant-picker-active-bar {
+  background-color: purple;
+}
+.ant-picker-range {
+  height: 40px;
+  border-radius: 4px;
+}
+
+.ant-upload-list-text .ant-upload-list-item-name,
+.ant-upload-list-picture .ant-upload-list-item-name {
+  font-size: 1.2rem !important;
+}
+
+.ant-upload-list-text .ant-upload-list-item-card-actions,
+.ant-upload-list-picture .ant-upload-list-item-card-actions {
+  font-size: 1.2rem;
+}
+
+.ptz-container {
+  position: relative;
+  flex: 1;
+  flex-wrap: wrap;
+  flex-basis: 50%;
+  display: inline-block;
+  border: 1px solid rgb(231, 231, 231);
+}
+.ptz-container.full-screen {
+  height: 100vh; /* viewport height */
+  width: 100vw; /* viewport width */
+  /* Other styles (positioning, background, etc.) */
+  position: fixed; /* Important to stay in view even when scrolling */
+  top: 0;
+  left: 0;
+  z-index: 999999; /* Ensure it's on top of other content if needed */
+}
+
+.ptz-image {
+  width: 100%;
+  min-width: 450px;
+  aspect-ratio: 16/9;
+}
+
+.ptz-image.full-screen {
+  width: 100%;
+  aspect-ratio: 16/7.8;
+}
+
+.widget-container {
+  position: absolute;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  z-index: 1299;
+  overflow: auto;
+}
+.widget-container.minimized {
+  min-width:400px !important;
+}
+.widget-content {
+  padding: 10px;
+  max-width: 1550px;
+  min-width: 850px;
+  overflow: auto;
+}
+
+.widget-container.minimized .widget-content {
+  display: none;
+  min-width:400px,
+}
+
+.widget-header {
+  background-color: skyblue;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.widget-controls {
+  margin-left: auto;
+}
+
+.widget-controls button {
+  background: none;
+  appearance: none;
+  border: none;
+  cursor: pointer;
+}
+
+.ptz-controls {
+  opacity: 0.2;
+}
+
+.ptz-container:hover .ptz-controls {
+  opacity: 1;
+}
+
+.ptz-btn {
+  background: rgba(255, 255, 255, 0.6);
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  position: absolute;
+  scale: 0.9;
+}
+
+.ptz-btn:hover {
+  background: rgba(255, 245, 245, 0.8);
+  color: #9d378e;
+  scale: 1;
+}
+
+.ptz-btn-z {
+  background: rgba(255, 255, 255, 0.6);
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  scale: 0.9;
+}
+
+.ptz-btn-z:hover {
+  background: rgba(255, 245, 245, 0.8);
+  color: #9d378e;
+  scale: 1;
+}
+
+.ptz-up {
+  top: 0;
+  left: 48%;
+  width: 50px;
+}
+
+.ptz-left {
+  top: 45%;
+  height: 45px;
+}
+
+.ptz-down {
+  bottom: 0;
+  left: 48%;
+  width: 50px;
+}
+
+.ptz-right {
+  top: 45%;
+  right: 0;
+  height: 45px;
+}
+
+.ptz-Zoom-in {
+  bottom: 10%;
+  right: 48%;
+  min-width: 30px;
+}
+
+.ptz-Zoom-out {
+  bottom: 10%;
+  right: 43%;
+  min-width: 30px;
+}
+
+.ptz-record {
+  bottom: 1%;
+  left: 1%;
+  font-size: small;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.ptz-fullscreen {
+  bottom: 1%;
+  right: 1%;
+  font-size: small;
+  height: 40px;
+  border-radius: 4px;
+}
+
+.ptz-container .recoding {
+  position: absolute;
+  top: 1%;
+  right: 1%;
+  border-radius: 5px;
+  height: 10px;
+  width: 10px;
+  background-color: red;
+  animation: pulse infinite linear 800ms;
+}
+
+.ptz-pulse {
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  animation: pulse infinite linear 1s alternate;
+}
+
+.ptz-label {
+  position: absolute;
+  display: inline-block;
+  bottom: 1%;
+  right: 1%;
+  color: #f1f1f1;
+  background-color: grey;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.1;
+  }
+}
+
+.i_note {
+  /* Parent container - helps avoid style collisions */
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto; /* Enable horizontal scrolling if content overflows */
+}
+
+.i_note table {
+  border-collapse: collapse;
+  width: 100%; /* Take full width of the parent */
+}
+
+.i_note th {
+  /* Table Header */
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: small;
+  padding: 4px;
+  text-align: left;
+  font-weight: 400;
+  border: 1px solid #ddd;
+}
+
+.i_note td {
+  /* Table Body */
+  padding: 4px;
+  font-weight: 600;
+  font-size: small;
+  border: 1px solid #ddd;
+}
+
+.i_note {
+  /* Parent container - helps avoid style collisions */
+  width: 100%;
+  border-collapse: collapse;
+  overflow-x: auto; /* Enable horizontal scrolling if content overflows */
+}
+
+.spares-table table {
+  border-collapse: collapse;
+  width: 100%; /* Take full width of the parent */
+}
+
+.spares-table th {
+  /* Table Header */
+  background-color: #fdfdfd;
+  color: #333;
+  font-size: small;
+  padding: 4px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.spares-table td {
+  /* Table Body */
+  padding: 4px;
+  border: 1px solid #ddd;
+}
+.no-display {
+  display: none;
+}
+
+@media print {
+  .no-display-on-print {
+    display: none;
+  }
+  .no-display {
+    display: block;
+  }
+}
+
+@media print {
+  .header-table {
+    display: block; /* or any other desired display property */
+    /* Add any other styles you want for printing, e.g., */
+    /* color: black; */
+    /* font-size: 14px; */
+  }
+}
+
+.header-table {
+  /* Parent container - helps avoid style collisions */
+  /* display: none; */
+  border-collapse: collapse;
+  border-style: double;
+  overflow-x: auto; /* Enable horizontal scrolling if content overflows */
+}
+
+.header-table table {
+  border-collapse: collapse;
+  width: 100%; /* Take full width of the parent */
+}
+
+.header-table th {
+  /* Table Header */
+  color: #333;
+  padding: 2px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+@keyframes pulse-badge {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulseAndScale {
+  0% {
+    opacity: 1;
+    scale: 0.1;
+  }
+
+  100% {
+    opacity: 0.1;
+    scale: 2.5;
+  }
+}
+
+.pulsating-badge {
+  animation: pulse-badge 1s infinite alternate;
+}
+
+.notification {
+  position: relative;
+  display: inline;
+  margin-left: 16px;
+  margin-bottom: 10px;
+}
+
+.notification > * {
+  position: absolute;
+  inset: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  align-items: center;
+  background-color: rgb(0, 255, 128);
+}
+
+.notification :first-child {
+  animation: pulse infinite linear 1s;
+}
+
+.notification :nth-child(2) {
+  animation: pulseAndScale infinite linear 1s 500ms;
+}

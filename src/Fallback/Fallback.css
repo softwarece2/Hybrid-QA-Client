@@ -1,0 +1,16 @@
+.fallback {
+  display: block;
+  max-width: 900px;
+  margin:auto;
+  margin-top: 20px;
+  padding: 1rem;
+  color: tomato;
+  text-align: center;
+}
+.fallback-header{
+padding-bottom: 20px;
+}
+.fallback-title {
+  padding: 0;
+  margin: 0;
+}

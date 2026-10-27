@@ -1,0 +1,28 @@
+:root {
+  --button: #4087b9;
+  --button-color: #f6f6f6;
+}
+
+#home-button {
+  background: var(--button);
+  color: var(--button-color);
+  padding: 0.5rem 2rem;
+  font-size: larger;
+  letter-spacing: 0.15rem;
+  min-width: 150px;
+}
+
+.info {
+  text-align: center;
+  width: 100%;
+  line-height: 1.5;
+  margin-top: 2%;
+}
+.not-found{
+  height: 140px;
+}
+
+.not-found-text{
+  margin-top: 1%;
+  margin-bottom: 2%;
+}

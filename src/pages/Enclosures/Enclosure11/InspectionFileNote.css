@@ -1,0 +1,39 @@
+#inspNotePrintbox .row-header {
+	display: flex;
+	justify-content: space-around;
+	font-size: 20px;
+}
+
+#inspNotePrintbox .row {
+	display: flex;
+}
+#inspNotePrintbox .remove-m-p {
+	margin: unset;
+	padding: unset;
+}
+#inspNotePrintbox .remarkleft {
+	width: 12rem;
+	display: grid;
+	justify-content: flex-start;
+}
+#inspNotePrintbox .remarktext {
+	width: 30%;
+}
+#inspNotePrintbox {
+	font-size: 10px;
+}
+#inspNotePrintbox .remarklist {
+	padding: 2px 0px 10px 6px;
+}
+#inspNotePrintbox .reverse {
+	justify-content: end;
+}
+#inspNotePrintbox td {
+	border: 0.2px solid rgb(121, 121, 121);
+	font-size: 10px;
+}
+#inspNotePrintbox table {
+	border-collapse: separate;
+	border-spacing: 8px 4px;
+	font-family: "Poppins", sans-serif;
+}

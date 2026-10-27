@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/emblem.webp" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="QA 4.0" />
+    <title>QA 4.0 (OLF)</title>
+    <style>
+      body > iframe[style*="2147483647"] {
+        display: none;
+      }
+    </style>
+  </head>
+  <!-- </head> -->
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <!-- <span hidden id="host-api">http://192.168.1.2:8766/</span> -->
+        <span hidden id="host-api">http://localhost:8766/</span>
+
+    <span hidden id="host-pdf-api">http://192.168.1.2:5000/</span>
+    <span hidden id="ws-api">ws://172.16.68.236:8766/video-stream</span>
+    <span hidden id="fgk-host-api">http://172.16.68.248:5002/</span>
+    <span hidden id="vms_ip">34.47.133.185</span>
+    <span hidden id="cv2_ip">http://172.195.120.86:5001</span>
+    <div id="root"></div>
+  </body>
+</html>

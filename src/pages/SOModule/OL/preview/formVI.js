@@ -1,0 +1,1139 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable eqeqeq */
+import "jspdf-autotable";
+import React, { useEffect, useState } from "react";
+
+//material-ui
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Divider,
+  FormHelperText,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@material-ui/core";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import { makeStyles } from "@material-ui/core/styles";
+import { saveAs } from "file-saver";
+import ilac from "../../../../assets/Images/iLacMRA.png";
+import nabcb from "../../../../assets/Images/nabcbLogo.png";
+//redux
+import { useSelector } from "react-redux";
+
+//components
+
+//icons
+import {
+  getINoteSignatoryList
+} from "Redux/Actions/Enclosure/INoteAction";
+import { StyledTableCell } from "Utils";
+import axios from "axios";
+import AutoCompleteNew from "components/AutoCompleteNew";
+import Button from "components/Button";
+import { PDF_SERVER } from "config";
+import moment from "moment";
+import axiosInstance from "pages/Services/AxiosInstanceTransaction";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+import InspectionTestCertificateTable from "../../../Enclosures/Enclosure13/InspectionTestCertificateTable";
+
+const useStyles = makeStyles((theme) => ({
+  pageContent: {
+    width: "95%",
+    padding: theme.spacing(4),
+    [theme.breakpoints.down("sm")]: {
+      padding: 0,
+      width: "100%",
+    },
+  },
+  printImage: {
+    display: "none",
+    "@media print": {
+      display: "block",
+      height: "100px",
+    },
+  },
+  paper: {
+    padding: "40px 40px 10px 40px",
+    position: 'relative',
+    zIndex: 10,
+    overflow: 'hidden'
+  },
+  draftDesign: {
+    position: 'absolute',
+    top: '10%',
+    left: '5%',
+    right: 0,
+    margin: 'auto',
+    textAlign: 'center',
+    fontSize: '32px',
+    transform: 'rotate(-30deg)',
+    width: 'fit-content',
+    zIndex: -1,
+    color: '#d5d7d8',
+    opacity: 0.4
+
+  },
+  logoLeft: {
+    [theme.breakpoints.up("lg")]: {
+      height: 75,
+    },
+    [theme.breakpoints.down("md")]: {
+      height: 72,
+    },
+    [theme.breakpoints.down("sm")]: {
+      height: 68,
+    },
+    [theme.breakpoints.down("xs")]: {
+      height: 66,
+    },
+  },
+  logoRight: {
+    [theme.breakpoints.up("lg")]: {
+      height: 75,
+    },
+    [theme.breakpoints.down("md")]: {
+      height: 62,
+    },
+    [theme.breakpoints.down("sm")]: {
+      height: 58,
+    },
+    [theme.breakpoints.down("xs")]: {
+      height: 56,
+    },
+  },
+  size: {
+    width: 15,
+    height: 15,
+  },
+  table: {
+    minWidth: "100%",
+  },
+  heading: {
+    textDecoration: "underline",
+    fontWeight: 600,
+  },
+  subHeading: {
+    fontWeight: 600,
+    fontSize: 14,
+  },
+  textSize: {
+    fontSize: "0.875rem",
+    textAlign: "justify",
+  },
+  textSizeBold: {
+    fontSize: "0.875rem",
+    fontWeight: 600,
+  },
+  tableCell: {
+    border: "1px solid black",
+  },
+  box: {
+    border: "1px solid black",
+    marginLeft: "10px",
+  },
+  button: {
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.palette.secondary.contrastText,
+    "&:hover, &:focus": {
+      color: theme.palette.secondary.contrastText,
+      background: theme.palette.secondary.main,
+    },
+  },
+}));
+
+const headCells = [
+  // { id: "index", label: "S.No.", align: "left" },
+  {
+    id: "claimId",
+    label:
+      "एरिया  छूट से आर  आई द्वारा जारी किया जाएगा / Concession/Deviations",
+    align: "left",
+    disableSorting: true,
+  },
+  {
+    id: "claimDate",
+    label:
+      "प्रभावित मद का संदर्भ एवं ड्राइंग संख्या / Affected Items Ref and Drg. No.",
+    align: "left",
+    disableSorting: true,
+  },
+  {
+    id: "claimStatus",
+    label: "छूट का संछेप विवरण / Brief Details of Concession/Deviations",
+    align: "left",
+    disableSorting: true,
+  },
+  {
+    id: "totalClaimedAmount",
+    label:
+      "छूट का प्राधिकार और तारीख /Authority for Consessions/Deviations and Date",
+    align: "left",
+    disableSorting: true,
+  },
+];
+const defaultArray = {
+  itemRemarks: "",
+  olLineItemId: "",
+  partNo: "",
+  uom: "",
+  tendered: "",
+  accepted: "",
+  rejected: "",
+  ledgerFolio: "",
+  qtyAcceptedToDate: "",
+  remarks: "",
+
+  orderedQty: "",
+  hologramRemarks: "",
+  indentNo: "",
+  description: "",
+};
+
+const defaultValues = {
+  inoteItemsDet: [defaultArray],
+};
+export default function FormVIPreview({ soObj, onClose }) {
+  const classes = useStyles();
+
+
+  const loggedInUser = useSelector((state) => state?.loggedInUser);
+
+
+  const [loading, setLoading] = React.useState(false);
+
+
+  const [data, setData] = useState(null);
+  const [signatoryList, setSignatoryList] = useState([]);
+  const [selectedSignatory, setSelectedSignatory] = useState(null);
+  const [signatoryError, setSignatoryError] = useState(null);
+  const [isSignatoryDirty, setIsSignatoryDirty] = useState(false);
+  const [rec, setRec] = useState([]);
+  const [INote, setINote] = useState("");
+  const [remarks, setRemarks] = useState("Satisfactory");
+  const roleId = useSelector((state) => state?.loggedInUser?.roleId);
+
+  const [prevInote, setPrevInote] = useState("");
+  const [prevInoteDate, setPrevInoteDate] = useState("");
+  const [Amendment, setAmendment] = useState("");
+
+
+  const methods = useForm({
+    defaultValues,
+    mode: "onChange",
+  });
+  const {
+   
+    control,
+   
+  } = methods;
+
+  const getFoe4DetailsByOlId = () => {
+    axiosInstance('offerLetter/getINoteByOLId/' + soObj?.id)
+      .then(({ data }) => {
+        console.log("res", data);
+        setINote(data?.inoteNo);
+        setRemarks(data?.cqaoRemarks);
+        setPrevInote(data?.prevINoteNo);
+        setPrevInoteDate(data?.prevINoteDate);
+        setAmendment(data?.amendment);
+        const newres = {
+          ...data,
+          inoteDate: data?.existing ? data?.inoteDate : data?.cqaoApprovalDate,
+        };
+        setData(newres);
+        // reset(res);
+      })
+      .catch((err) => toast.error(err.response.data));
+  };
+
+  React.useEffect(() => {
+    getINoteSignatories();
+    getFoe4DetailsByOlId();
+  }, []);
+
+
+
+  useEffect(() => {
+    if (isSignatoryDirty && selectedSignatory) setSigntoryErrFalse();
+  }, [selectedSignatory]);
+
+
+
+  const setSigntoryErrFalse = () => {
+    setSignatoryError({ error: false, msg: null });
+  };
+
+  const getINoteSignatories = () => {
+    getINoteSignatoryList(loggedInUser?.orgId)
+      .then((res) => setSignatoryList(res))
+      .catch((err) => toast.error("Something went wrong"));
+  };
+
+  let draftText = [];
+  for (let i = 0; i < 10; i++) {
+    draftText.push(<p>{'Draft '.repeat(6)}</p>);
+  }
+
+
+  return (
+    <Dialog open maxWidth='xl' fullWidth onClose={onClose}>
+      <DialogContent dividers>
+        <Paper className={classes.paper}>
+          <span className={classes.draftDesign}>
+            {draftText}
+          </span>
+          <Grid container spacing={1}>
+            <Grid item xs={3} sm={3} md={3} lg={3} xl={3} align="center">
+              <img src={ilac} alt="logo" className={classes.logoLeft} />
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="center">
+              <Typography className={classes.heading}>
+                फॉर्म IV / Form IV
+              </Typography>
+              <Typography className={classes.heading}>
+                निरीक्षण एवं परीक्षण प्रमाण पत्र
+              </Typography>
+              <Typography className={classes.heading}>
+                INSPECTION AND TEST CERTIFICATE
+              </Typography>
+            </Grid>
+            <Grid item xs={3} sm={3} md={3} lg={3} xl={3} align="center">
+              <img src={nabcb} alt="logo" className={classes.logoRight} />
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                फर्म का संदर्भ / Firms's Ref :
+                <span style={{ fontWeight: "normal" }}>
+                  {data?.offerLetterNo}
+                </span>
+              </Typography>
+              {/* <br /> */}
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                तारीख / Date : &nbsp;&nbsp;
+                <span style={{ fontWeight: "normal" }}>
+                  {data?.olDateStr &&
+                    moment(
+                      data.olDateStr
+                        .split(",")
+                        ?.sort(
+                          (a, b) =>
+                            new Date(a?.split("-").reverse().join("-")) -
+                            new Date(b?.split("-").reverse().join("-"))
+                        )[0]
+                        .split("-")
+                        .reverse()
+                        .join("-")
+                    ).format("DD-MMM-YYYY")}
+                </span>
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                1. निरीक्षण प्राधिकार / QA INSPECTION AUTHORITY
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                : &nbsp;&nbsp;{data?.orgName}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                2.निरीक्षण की तारिख / DATE OF INSPECTION
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                : &nbsp;&nbsp;
+                {data?.inspectionStart ? data?.inspectionStart : "NA"} To
+                {data?.inspectionEnd ? data?.inspectionEnd : "NA"}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                3. फर्म का नाम / FIRMS'S NAME
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                :&nbsp;&nbsp; {data?.contractorAddress}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                4. आदेश देने का प्राधिकार / ORDERING AUTHORITY
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                :&nbsp;&nbsp; {data?.indentor}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                5. आदेश संख्या एवं तारीख / ORDER No. AND DATE
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                :&nbsp;&nbsp; {data?.supplyOrderNo ?? "-"} Dated
+                {data?.supplyOrderDate
+                  ? moment(data?.supplyOrderDate).format("DD-MM-YYYY")
+                  : "-"}
+                {data?.existing ?
+                  <Typography className={classes.textSizeBold} style={{ marginLeft: "18px" }}>
+                    {data?.amendment}
+                  </Typography> :
+                  <TextField
+                    onChange={(e) => {
+                      setAmendment(e.target.value);
+                    }}
+                    inputProps={{ maxLength: 500 }}
+                    style={{ width: "550px", fontSize: "11px" }}
+                    value={Amendment}
+                    InputProps={{ classes: { input: classes.textSizeBold } }}
+                    variant="outlined"
+                    size="small"
+                  />}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                6. क - प्रमाण / (a) DESCRIPTION
+              </Typography>
+              <Typography className={classes.textSize}>
+                [जिस मद से यह प्रमाण पत्र संबंधित है उसका पूर्ण विवरण मात्रा तथा
+                पंजीकरण संख्या यदि यह प्रेषित माल केवल आंशिक आपूर्ति है तो इस
+                कालम मे आंशिक आपूर्ति लिखा जाना चाहिए / Full description qty and
+                registered numbers if any, of the items to which this
+                certificate refers (if this consignment represents only part
+                supply, this column should be enclosed 'PART SUPPLY')]
+              </Typography>
+            </Grid>
+            <Grid item xs={1}>
+              :&nbsp;&nbsp;
+            </Grid>
+            <Grid item xs={5} sm={5} md={5} lg={5} xl={5}>
+              <Typography align="center" className={classes.subHeading}>
+                <span style={{ textDecoration: "underline" }}>
+                  {data?.typeOfDelivery}
+                </span>
+              </Typography>
+              <Typography
+                align="center"
+                style={{ textDecoration: "underline" }}
+                className={classes.subHeading}
+              >
+                {data?.description}
+              </Typography>
+              <br />
+              <Typography align="center" className={classes.subHeading}>
+                <span
+                  style={{
+                    padding: 4,
+                    borderTop: "2px solid black",
+                    borderBottom: "2px solid black",
+                  }}
+                >
+                  Total Items Inspected : &nbsp;&nbsp;
+                  {data?.inoteLineItems?.length}
+                  <span style={{ fontWeight: 400 }}>
+                    (Details as per Enclosure)
+                  </span>
+                </span>
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                (b)PREVIOUS REFERENCE
+              </Typography>
+              <Typography className={classes.textSize}>
+                (यदि पहले कोई आंशिक आपूर्ति दी गयी हो तो उससे संबंधित जारी किए
+                गए निरीक्षण एवं परीक्षण प्रमाण- पत्रो की संदर्भ संख्या / Ref.No.
+                of I and T certficate, if any, issued in respect of part
+                supplies made earlier)
+              </Typography>
+            </Grid>
+            {data?.prevINoteNo != null || data?.existing ? (
+              <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+                <Typography className={classes.subHeading}>
+                  :&nbsp;&nbsp; {data?.prevINoteNo}
+                  &nbsp;&nbsp;&nbsp;DATED&nbsp;&nbsp;&nbsp;
+                  {data?.prevINoteDate}
+                </Typography>
+              </Grid>
+            ) : (
+              <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+                {/* <Typography className={classes.subHeading}>:&nbsp;&nbsp;NIL</Typography> */}
+
+                <Grid container direction="row" alignItems="center" spacing={1}>
+                  <Grid item>
+                    <TextField
+                      onChange={(e) => {
+                        setPrevInote(e.target.value);
+                      }}
+                      inputProps={{ maxLength: 200 }}
+                      style={{ width: "180px", fontSize: "11px" }}
+                      value={prevInote}
+                      InputProps={{ classes: { input: classes.textSize } }}
+                      variant="outlined"
+                      size="small"
+                      placeholder="Prev I-Note No"
+                    />
+                  </Grid>
+
+                  <Grid item>
+                    <Typography className={classes.subHeading}>
+                      &nbsp;&nbsp;DATED&nbsp;&nbsp;
+                    </Typography>
+                  </Grid>
+
+                  <Grid item>
+                    <TextField
+                      placeholder="Previous I-Note date"
+                      onChange={(e) => {
+                        setPrevInoteDate(e.target.value);
+                        console.log("date", e.target.value);
+                      }}
+                      // onChange={e => onChange(setSelectedDate(e.target.value))}
+                      value={prevInoteDate}
+                      type="date"
+                      size="small"
+                      required
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+            )}
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                7.ड्राइंग संख्या तथा विशिष्ट संख्या / Drg. No.and Specification
+                No.
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                :
+                <span style={{ fontWeight: "normal" }}>
+                  &nbsp;&nbsp;As in 6(a) above
+                </span>
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                8. जिसको भेजा गया/ भेजा जाएगा उसका प्रेषण विवरण यदि उपलब्ध हो /
+                DESPATCHED TO AND DESPATCH DETAILS (if available).
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                : &nbsp;&nbsp;{data?.consignee ?? "-"}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} align="left">
+              <Typography className={classes.subHeading}>
+                9. फर्म का प्रमाण -पत्र / FIRM'S CERTIFICATE
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} align="left">
+              <Typography className={classes.textSize}>
+                मैं / हम यह प्रमाणित करते है कि / I / We hereby certify that :
+              </Typography>
+              <br />
+              <Typography className={classes.textSize}>
+                (क) नीचे ग मे दी गई वस्तुओ के ब्योरोको छोड़ कर यहा वर्णित वस्तुओ
+                का संगत विशिष्टियों और ड्राइंगो के अनुसार निरीक्षण और परीक्षण
+                किया गया |<br /> (a) The articles described here have been
+                inspected and tested at our works in accordance with the
+                relevant specifications and drawings, with which they comply
+                except as detailed at (c) below.
+              </Typography>
+              <br />
+              <Typography className={classes.textSize}>
+                (ख) संगत आदेश सहित सामानो की पहचान तथा पैकिंग से संबंधित पूरी कर
+                ली गई है या कर ली जाएंगी |<br /> (b) Any other requirements of
+                relevant order including those referring to identification and
+                packing of articles have been met or will be met.
+              </Typography>
+              <br />
+              <Typography className={classes.textSize}>
+                (ग) आदेश मे निर्धारित बोर्ड पर कार्य निष्पादन की गारंटी के बारे
+                मे यह प्रमाण -पत्र हमे किसी प्रकार की छूट नहीं देता |<br />
+                (c) This certificate does not relieve us from any guarantee
+                regarding performanace on board stipulated in the order.
+              </Typography>
+              <br />
+              <Typography className={classes.textSize}>
+                (घ) निरीक्षण करने वाले प्राधिकरण के एजेंट के प्राधिकार के बिना
+                इन ड्राइंगो तथा विशिष्टियों मे किसी प्रकार का कोई बदलाव नहीं
+                किया जा सकता प्राधिकृत बदलाव नीचे पैरा 10 मे दिये गए है |<br />
+                (d) There has been no deviation from the drawings and
+                specifications execept as authorised by the Inspecting
+                Authority/Agency. The authorised deviations are stated in para
+                10 below.
+              </Typography>
+              {/* <br /> */}
+            </Grid>
+            <Grid
+              item
+              xs={4}
+              sm={4}
+              md={4}
+              lg={4}
+              xl={4}
+              className={classes.box}
+              align="left"
+              style={{ marginTop: "25px" }}
+            >
+              <Typography
+                className={classes.subHeading}
+                style={{ padding: 4, fontStyle: "italic", fontWeight: 600 }}
+              >
+                {`"This I&TC is valid till..... 
+                ${data?.createdDate
+                    ? moment(data?.createdDate, "DD-MM-YYYY")
+                      .add(1, "M")
+                      .format("DD-MM-YYYY")
+                    : ""
+                  }, for the purpose of
+                despatch only."`}
+                {/* "This I-Note is valid till..... 26-May-23, for the purpose of despatch only. " */}
+              </Typography>
+            </Grid>
+            <br />
+            <br />
+            <Grid
+              item
+              xs={3}
+              sm={3}
+              md={3}
+              lg={3}
+              xl={3}
+              style={{ marginTop: "25px" }}
+            ></Grid>
+            <Grid
+              item
+              xs={4}
+              sm={4}
+              md={4}
+              lg={4}
+              xl={4}
+              align="center"
+              style={{ marginTop: "25px" }}
+            >
+              <Typography className={classes.subHeading}>
+                ITEMS INSPECTED ARE MARKED WITH <br />
+                {data?.remarks == "null"
+                  || data?.remarks == null || data?.remarks == ""
+                  ? (
+                    data?.remarks
+                  ) : (
+                    <span
+                      style={{
+                        fontStyle: "italic",
+                        fontWeight: 600,
+                        display: "block",
+                        textAlign: "center",
+                      }}
+                    >
+                      {data?.remarks ?? data?.remarks.split("\n").map((line, index) => (
+                        <React.Fragment key={index}>
+                          {line}
+                          <br />
+                        </React.Fragment>
+                      ))}
+                    </span>
+                  )}
+              </Typography>
+            </Grid>
+            {/* <br/>
+            <br/>
+            <br/> */}
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              xl={12}
+              align="center"
+              style={{ marginTop: "25px" }}
+            >
+              <Typography className={classes.subHeading}>
+                {data?.inoteNo}&nbsp;&nbsp; DATED &nbsp;&nbsp;
+                {!data?.existing && roleId === 2 ? (
+                  <Controller
+                    name="cqaoApprovalDate"
+                    control={control}
+                    //value={value}
+                    render={({ field: { onChange, value, ...props } }) => (
+                      <span style={{ fontWeight: 600 }}>
+                        {moment(value).format("DD-MM-YYYY")}
+                      </span>
+                    )}
+                  />
+                ) : (
+                  <span style={{ fontWeight: 600 }}>
+                    {data?.inoteDate
+                      ? moment(data?.inoteDate).format("DD-MM-YYYY")
+                      : "   NA"}
+                  </span>
+                )}
+              </Typography>
+            </Grid>
+            <br />
+            <br />
+            <br />
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={12}
+              lg={12}
+              xl={12}
+              align="left"
+              style={{ marginTop: "20px" }}
+            >
+              <Typography className={classes.textSize}>
+                (च) संगत निरीक्षक एवं परीक्षण प्रमाण - पत्रों तथा रीपोर्टों के
+                रेकॉर्ड हमने रख लिए है तथा इनकी प्रतियां निरीक्षक को उपलब्ध करवा
+                दी गयी है | निरीक्षक के प्राधिकार के बिना हमारे द्वारा रखे गए
+                रेकॉर्ड नष्ट कर दिये जाएंगे |<br />
+                (e) Records of the relevant inspection and test certificates and
+                reports have been retained by us with copies provided to the
+                inspection agency. The records retained by us will not be
+                destroyed without his written authority.
+              </Typography>
+            </Grid>
+            <div class="pagebreak"> </div>
+            <Divider></Divider>
+            <br />
+            <br />
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} align="left">
+              <Typography className={classes.subHeading}>
+                10. उपयुक्त पैरा घ के अनुसार दी गई छूट | पिछला संदर्भ यदि कोई है
+                तो उसे हर पृष्ठ पर देते हुए जारी रखा जा सकता है |<br />
+                Concession/Deviations granted as per para 9(d) referred above
+                (continue on separate loose sheets if required giving reasons)
+              </Typography>
+            </Grid>
+          </Grid>
+          <br />
+          <Paper>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+              <Grid
+                item
+                xs={12}
+                sm={12}
+                md={12}
+                lg={12}
+                xl={12}
+                align="center"
+                style={{ margin: "auto", overflowX: "auto" }}
+              >
+                <Grid container>
+                  <TableContainer style={{ maxHeight: "600px" }}>
+                    {loading && <LinearProgress />}
+                    <Table
+                      style={{
+                        position: "relative",
+                        border: "1px solid lightgrey",
+                      }}
+                      size="small"
+                      aria-label="simple table"
+                      id="data-table-cleanliness-report"
+                    >
+                      <TableHead>
+                        <TableRow className={classes.tableCell}>
+                          {headCells.map((el, index) => (
+                            <TableCell key={index}>
+                              <Typography
+                                style={{ fontSize: "13px", fontWeight: 800 }}
+                              >
+                                {el.label}
+                              </Typography>
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+
+                      {/* <TblHead /> */}
+                      {rec.length > 0 ? (
+                        rec?.map((input, index) => (
+                          <TableBody>
+                            <StyledTableCell className={classes.tableCell}>
+                              <Typography className={classes.textSize}>
+                                {input?.concession}
+                              </Typography>
+                            </StyledTableCell>
+                            <StyledTableCell className={classes.tableCell}>
+                              <Typography className={classes.textSize}>
+                                {input?.affectedItemRef}
+                              </Typography>
+                            </StyledTableCell>
+                            <StyledTableCell className={classes.tableCell}>
+                              <Typography className={classes.textSize}>
+                                {input?.concessionDetails}
+                              </Typography>
+                            </StyledTableCell>
+                            <StyledTableCell className={classes.tableCell}>
+                              <Typography className={classes.textSize}>
+                                {input?.authority}
+                              </Typography>
+                            </StyledTableCell>
+                          </TableBody>
+                        ))
+                      ) : (
+                        <TableBody>
+                          <TableRow>
+                            <TableCell
+                              colSpan={headCells.length}
+                              align="center"
+                            >
+                              <Typography className={classes.text}>
+                                <span
+                                  style={{ fontWeight: 400, color: "#4A4A4A" }}
+                                >
+                                  NIL
+                                </span>
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      )}
+
+                      {/* {recordsAfterPagingAndSorting()?.length != 0 &&
+                    recordsAfterPagingAndSorting()?.length != undefined ? (
+                      <TblPagination />
+                    ) : (
+                      ""
+                    )} */}
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Paper>
+          <br />
+          <Grid container spacing={2}>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                फार्म की ओर से हस्ताक्षर / SIGNED ON BEHALF OF THE FIRM
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                :&nbsp;&nbsp;
+                {data?.contractorAddress ?? "-"}
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                हस्ताक्षर / SIGNATURE
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>: </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                पद / POSITION HELD
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>: </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                तारीख / DATE
+              </Typography>
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              {!data?.existing && roleId === 2 ? (
+                <Controller
+                  name="cqaoApprovalDate"
+                  control={control}
+                  //value={value}
+                  render={({ field: { onChange, value, ...props } }) => (
+                    <Typography className={classes.subHeading}>
+                      : {moment(value).format("DD-MM-YYYY")}
+                    </Typography>
+                  )}
+                />
+              ) : (
+                <Typography className={classes.subHeading}>
+                  :
+                  {data?.inoteDate
+                    ? moment(data?.inoteDate).format("DD-MM-YYYY")
+                    : "NA"}
+                </Typography>
+              )}
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                11. क्षेत्रीय / निवासी निरीक्षक की टिप्पणिया यदि कोई हो /
+                REMARKS OF THE Senior QUALITY ASSURANCE OFFICER (if any)
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              {data?.existing == true ? (
+                <Typography
+                  style={{ fontWeight: 600 }}
+                  className={classes.subHeading}
+                >
+                  : {remarks}
+                </Typography>
+              ) : (
+                <TextField
+                  onChange={(e) => {
+                    setRemarks(e.target.value);
+                  }}
+                  inputProps={{ maxLength: 200 }}
+                  style={{ width: "150px", fontSize: "11px" }}
+                  value={remarks}
+                  InputProps={{ classes: { input: classes.textSize } }}
+                  variant="outlined"
+                  size="small"
+                />
+              )}
+              {/* <Typography className={classes.subHeading}>
+                : <span style={{ fontWeight: "600" }}>Satisfactory</span>
+              </Typography> */}
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                12. निरीक्षक का प्रमाण पत्र / INSPECTION AND TEST CERTIFICATE
+                NUMBER
+              </Typography>
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                <style>{`.labelInote {
+                display:none;
+              } @media print{.iNoteText{display:none;} 
+              .labelInote{
+                display:block;
+              }}`}</style>
+
+                {data?.existing == true ? (
+                  <Typography
+                    style={{ fontWeight: 600 }}
+                    className={classes.subHeading}
+                  >
+                    : {INote}
+                  </Typography>
+                ) : (
+                  <TextField
+                    onChange={(e) => {
+                      setINote(e.target.value);
+                    }}
+                    inputProps={{ maxLength: 20 }}
+                    style={{ width: "150px", fontSize: "11px" }}
+                    value={INote}
+                    InputProps={{ classes: { input: classes.textSize } }}
+                    variant="outlined"
+                    size="small"
+                  />
+                )}
+
+                {/* <span style={{ fontWeight: 600 }} className="labelInote">: {data?.inoteNo}</span> */}
+              </Typography>
+            </Grid>
+            <Grid item xs={7} sm={7} md={7} lg={7} xl={7} align="left">
+              <Typography className={classes.textSize}>
+                प्रमाणित किया जाता है की निरीक्षण और परीक्षण से मैं संतुष्ट हूँ
+                / Certified that inspection and test have been carried out to my
+                satisfaction.
+              </Typography>
+              <br />
+            </Grid>
+
+            <Grid item xs={5} sm={5} md={5} lg={3} xl={3} align="left">
+              {/* <Typography className={classes.subHeading}>Sunil Kumar</Typography>
+              <Typography className={classes.subHeading}> SSO-II</Typography>
+              <Typography className={classes.subHeading}>ACQAO</Typography> */}
+              <div className="signatory">
+                <style>{`@media print{.signatory{display:none;}}`}</style>
+                <AutoCompleteNew
+                  labelText="Select Signatory"
+                  data={signatoryList}
+                  getOptionLabel={(o) => o?.ename}
+                  onChange={(e, v) => {
+                    setSelectedSignatory(v);
+                    setIsSignatoryDirty(true);
+                  }}
+                  value={selectedSignatory}
+                />
+              </div>
+              {/* <p className={classes.printImage}></p> */}
+              <FormHelperText error={!!signatoryError?.error}>
+                {signatoryError?.msg}
+              </FormHelperText>
+              {selectedSignatory && (
+                <>
+                  <p className={classes.printImage}></p>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.enameHi}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.ename}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.designationHi}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.designation}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.roleNameHi}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.roleName}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    वरिष्ठ् गुणवत्ता आश्वासन अधिकारी के लिए
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    For Senior Quality Assurance Officer
+                  </Typography>
+                </>
+              )}
+            </Grid>
+
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              <Typography className={classes.subHeading}>
+                तारीख / DATE
+              </Typography>
+              <br />
+              <br />
+            </Grid>
+            <Grid item xs={6} sm={6} md={6} lg={6} xl={6} align="left">
+              {!data?.existing ? (
+                <Controller
+                  name="cqaoApprovalDate"
+                  control={control}
+                  //value={value}
+                  render={({ field: { onChange, value, ...props } }) => (
+                    <TextField
+                      {...props}
+                      labelText="Approval Date"
+                      placeholder="Approval date"
+                      onChange={(e) => {
+                        onChange(e);
+                        setData({
+                          ...data,
+                          inoteDate: e.target.value,
+                        });
+                        console.log("date", e.target.value);
+                      }}
+                      // onChange={e => onChange(setSelectedDate(e.target.value))}
+                      value={value ? moment(value).format("yyyy-MM-DD") : null}
+                      type="date"
+                      size="small"
+                      required
+                    />
+                  )}
+                />
+              ) : (
+                <Typography
+                  style={{ fontWeight: 600 }}
+                  className={classes.subHeading}
+                >
+                  :
+                  {data?.inoteDate
+                    ? moment(data?.inoteDate).format("DD-MM-YYYY")
+                    : "NA"}
+                </Typography>
+              )}
+            </Grid>
+          </Grid>
+          <br />
+          <br />
+          <div class="pagebreak"> </div>
+          <FormProvider {...methods}>
+            <InspectionTestCertificateTable
+              existing={data?.existing}
+              data={data?.inoteLineItems}
+              num={data?.inoteNo}
+              date={data?.inoteDate}
+            />
+          </FormProvider>
+          <Grid container>
+            <Grid item xs={7} sm={7} md={7} lg={7} xl={7} align="left" />
+            <Grid item xs={5} sm={5} md={5} lg={5} xl={5} align="left">
+              {/* <Typography className={classes.subHeading}>Sunil Kumar</Typography>
+              <Typography className={classes.subHeading}> SSO-II</Typography>
+              <Typography className={classes.subHeading}>ACQAO</Typography>
+              <Typography className={classes.subHeading}>For Senior Quality Assurance Officer</Typography> */}
+              {selectedSignatory && (
+                <>
+                  <p className={classes.printImage}></p>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.enameHi}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.ename}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.designationHi}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.designation}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.roleNameHi}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    {selectedSignatory?.roleName}
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    वरिष्ठ् गुणवत्ता आश्वासन अधिकारी के लिए
+                  </Typography>
+                  <Typography className={classes.textSizeBold}>
+                    For Senior Quality Assurance Officer
+                  </Typography>
+                </>
+              )}
+            </Grid>
+          </Grid>
+          {/* <Grid container spacing={1} justifyContent="flex-end"   style={{ marginTop: "20px" }}>
+          
+          <Grid
+            item
+            alignItems="center"
+            align="center"
+          >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className="printbtn"
+                  //disabled={!data?.existing}
+                  onClick={()=>generatePDF(selectedSignatory, records, data, rec,  remarks, INote  )}
+                >
+                  Export PDF
+                </Button>
+          </Grid>
+        </Grid> */}
+        </Paper>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} variant='outlined' color='secondary'>Close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+

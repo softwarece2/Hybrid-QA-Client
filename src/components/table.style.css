@@ -1,0 +1,3 @@
+.MuiButton-iconSizeMedium > :first-child {
+    font-size: 13px !important;
+}

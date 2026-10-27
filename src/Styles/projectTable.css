@@ -1,0 +1,18 @@
+.dialog_table {
+  border-collapse: collapse;
+}
+
+.dialog_table td {
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 4px;
+}
+
+.dialog_table th {
+  color: white;
+  width: 150px;
+  border: 1px solid white;
+  padding: 18px;
+  text-align: left;
+  background-color: #205375;
+}

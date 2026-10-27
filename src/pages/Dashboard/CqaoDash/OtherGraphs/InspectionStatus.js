@@ -1,0 +1,95 @@
+import React from "react";
+//Material ui-core
+import { Card, CardHeader, makeStyles, Typography } from "@material-ui/core";
+
+//react-chart
+import { Bar } from "react-chartjs-2";
+
+const useStyles = makeStyles((theme) => ({
+  Title: {
+    fontSize: "1rem",
+  },
+  root: {
+    minHeight: 235,
+    width: 400,
+    [theme.breakpoints.up("md")]: {
+      width: "82%",
+    },
+  },
+  card: {
+    padding: 2,
+    color: "white",
+    backgroundColor: theme.palette.primary.main,
+  },
+}));
+
+const options = {
+  type: "bar",
+  scales: {
+    yAxes: [
+      {
+        ticks: {
+          // The y-axis value will start from zero
+          beginAtZero: true,
+        },
+      },
+    ],
+  },
+
+  legend: {
+    labels: {
+      fontSize: 15,
+    },
+  },
+};
+
+const data = {
+  labels: ["Inspector1", "Inspector2", "Inspector3"],
+
+  datasets: [
+    {
+      label: "Alloted",
+      borderWidth: 0.5,
+      borderColor: ["#42A5F5", "#42A5F5", "#42A5F5", "#42A5F5", "#42A5F5"],
+      backgroundColor: ["#42A5F5", "#42A5F5", "#42A5F5", "#42A5F5", "#42A5F5"],
+      data: [100, 110, 130],
+      barPercentage: 0.3,
+    },
+    {
+      label: "Pending ",
+      borderWidth: 0.5,
+      borderColor: ["#FF7043", "#FF7043", "#FF7043", "#FF7043", "#FF7043"],
+      backgroundColor: ["#FF7043", "#FF7043", "#FF7043", "#FF7043", "#FF7043"],
+      data: [50, 50, 60],
+
+      barPercentage: 0.3,
+      // green #9CCC65 ,org #FF7043, bl #42A5F5
+    },
+
+    {
+      label: "Completed",
+      borderWidth: 0.5,
+      borderColor: ["#9CCC65", "#9CCC65", "#9CCC65", "#9CCC65", "#9CCC65"],
+      backgroundColor: ["#9CCC65", "#9CCC65", "#9CCC65", "#9CCC65", "#9CCC65"],
+      data: [50, 60, 70],
+      barPercentage: 0.3,
+    },
+  ],
+};
+
+export default function InspectionStatus() {
+  const classes = useStyles();
+
+  return (
+    <div>
+      <Card className={classes.root}>
+        <CardHeader
+          className={classes.card}
+          disableTypography
+          title={<Typography style={{ fontSize: "0.875rem" }}>Inspection Status</Typography>}
+        />
+        <Bar data={data} options={options} align="center" style={{ maxwidth: "40px" }} />
+      </Card>
+    </div>
+  );
+}
