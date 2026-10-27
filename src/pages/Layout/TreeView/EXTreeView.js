@@ -9,6 +9,7 @@ import OLTable from "pages/Sslip/SSlipTable";
 import { selectItem } from "../../../Redux/Actions/SelectTreeItem";
 import ApprovalCycleSslip from "pages/ApprovalCycleOL/ApprovalCycleSslip";
 import IOLDehradun from "pages/SummaryData/IOL/IOLDehradun";
+import AteDrilldownDashboard from "pages/SummaryData/IOL/drilldown-dashboard";
 import DetailsINote from "pages/InspectorModule/INote/DetailsINote";
 import { Home, LayersOutlined, ListAlt, SupervisorAccount } from "@material-ui/icons";
 import { useNotification } from "context/notification";
@@ -40,6 +41,12 @@ const QAAgency = loggedInUser?.orgTypeId === ORG_TYPE.QA_AGENCY
           label: "Dashboard",
           Icon: LayersOutlined,
           component: <IOLDehradun />,
+        },
+        {
+          id: "ate-quality-drilldown",
+          label: "Quality Analytics (Drilldown)",
+          Icon: LayersOutlined,
+          component: <AteDrilldownDashboard />,
         },
       ],
     },

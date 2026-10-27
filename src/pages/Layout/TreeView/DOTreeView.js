@@ -8,6 +8,7 @@ import INoteTable from "pages/InspectorModule/INote/INoteTable";
 import OLNotification from "pages/Notifications/OLNotification/OLNotification";
 import { selectItem } from "../../../Redux/Actions/SelectTreeItem";
 import IOLDehradun from "pages/SummaryData/IOL/IOLDehradun";
+import AteDrilldownDashboard from "pages/SummaryData/IOL/drilldown-dashboard";
 import DetailsINote from "pages/InspectorModule/INote/DetailsINote";
 import CameraMappingTable from "pages/VideoInspection/Sbu/CameraMappingTable.js";
 import LotDetails from "pages/InspectorModule/Lots/LotDetails";
@@ -43,7 +44,10 @@ const QAAgency = loggedInUser?.orgTypeId === ORG_TYPE.QA_AGENCY
       id: 1,
       label: "Dashboard",
       header: true,
-      child: [{ id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> }],
+      child: [
+        { id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> },
+        { id: "ate-quality-drilldown", label: `Quality Analytics (Drilldown)`, Icon: Home, component: <AteDrilldownDashboard /> },
+      ],
     },
 {
       id: 1,

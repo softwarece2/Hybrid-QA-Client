@@ -24,6 +24,7 @@ import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 // import { fontWeight } from "html2canvas/dist/types/css/property-descriptors/font-weight";
 import QAOLApprovalCycle from "pages/QAOLApprovalCycle";
 import IOLDehradun from "pages/SummaryData/IOL/IOLDehradun";
+import AteDrilldownDashboard from "pages/SummaryData/IOL/drilldown-dashboard";
 import { Ballot, Home } from "@material-ui/icons";
 import InspectOLTable from "pages/InspectorModule/OLInspector/InspectOLTable";
 import { useNotification } from "context/notification";
@@ -51,7 +52,10 @@ export default function JETreeView() {
       id: 1,
       label: "Dashboard",
       header: true,
-      child: [{ id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> }],
+      child: [
+        { id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> },
+        { id: "ate-quality-drilldown", label: `Quality Analytics (Drilldown)`, Icon: InsertChartRoundedIcon, component: <AteDrilldownDashboard /> },
+      ],
     },
 
     {

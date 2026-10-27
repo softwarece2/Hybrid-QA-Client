@@ -15,6 +15,7 @@ import { selectItem } from "../../../Redux/Actions/SelectTreeItem";
 import MasterPartNo from "pages/MasterPartNo";
 import ProductToPartNoMapping from "pages/ProductToPartNoMapping";
 import IOLDehradun from "pages/SummaryData/IOL/IOLDehradun";
+import AteDrilldownDashboard from "pages/SummaryData/IOL/drilldown-dashboard";
 import EpcodeTable from "pages/SOModule/LineItemsDetails/EpcodeTable";
 import DetailsINote from "pages/InspectorModule/INote/DetailsINote";
 import DepartmentToProductMapping from "pages/DepartmentToProductMapping";
@@ -40,7 +41,10 @@ const QAAgency = loggedInUser?.orgTypeId === ORG_TYPE.QA_AGENCY
       id: 1,
       label: "Dashboard",
       header: true,
-      child: [{ id: 2, label: `Product Dashboard `, Icon: Home, component: <IOLDehradun /> }],
+      child: [
+        { id: 2, label: `Product Dashboard `, Icon: Home, component: <IOLDehradun /> },
+        { id: "ate-quality-drilldown", label: `Quality Analytics (Drilldown)`, Icon: Home, component: <AteDrilldownDashboard /> },
+      ],
     },
 
     {

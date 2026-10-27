@@ -26,6 +26,7 @@ import ApprovalCycleje from "pages/ApprovalCycle/ApprovalCycleje";
 // import { fontWeight } from "html2canvas/dist/types/css/property-descriptors/font-weight";
 import QAOLApprovalCycle from "pages/QAOLApprovalCycle";
 import IOLDehradun from "pages/SummaryData/IOL/IOLDehradun";
+import AteDrilldownDashboard from "pages/SummaryData/IOL/drilldown-dashboard";
 import { Ballot, Home } from "@material-ui/icons";
 import QAAgencyAllotOl from "pages/SOModule/Allot/QAAgencyAllotOl";
 import InspectOLTable from "pages/InspectorModule/OLInspector/InspectOLTable";
@@ -54,7 +55,10 @@ const QAAgency = loggedInUser?.orgTypeId === ORG_TYPE.QA_AGENCY
       id: 1,
       label: "Dashboard",
       header: true,
-      child: [{ id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> }],
+      child: [
+        { id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> },
+        { id: "ate-quality-drilldown", label: `Quality Analytics (Drilldown)`, Icon: InsertChartRoundedIcon, component: <AteDrilldownDashboard /> },
+      ],
     },
 
     {

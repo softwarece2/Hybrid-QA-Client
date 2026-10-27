@@ -19,6 +19,7 @@ import INoteRegister from "pages/Registers/INoteRegister/INoteRegister";
 import QAAgencyAllotOl from "pages/SOModule/Allot/QAAgencyAllotOl";
 import QAOLApprovalCycle from "pages/QAOLApprovalCycle";
 import IOLDehradun from "pages/SummaryData/IOL/IOLDehradun";
+import AteDrilldownDashboard from "pages/SummaryData/IOL/drilldown-dashboard";
 import { Ballot, Home } from "@material-ui/icons";
 import InspectOLTable from "pages/InspectorModule/OLInspector/InspectOLTable";
 import ExternalInoteGeneration from "pages/InspectorModule/INote/ExternalInoteGeneration";
@@ -46,7 +47,10 @@ const QAAgency = loggedInUser?.orgTypeId === ORG_TYPE.QA_AGENCY
       id: 1,
       label: "Dashboard",
       header: true,
-      child: [{ id: 1, label: `Dashboard `, Icon: DashboardIcon, component: <IOLDehradun /> }],
+      child: [
+        { id: 1, label: `Dashboard `, Icon: DashboardIcon, component: <IOLDehradun /> },
+        { id: "ate-quality-drilldown", label: `Quality Analytics (Drilldown)`, Icon: DashboardIcon, component: <AteDrilldownDashboard /> },
+      ],
     },
 
     {

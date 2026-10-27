@@ -18,6 +18,7 @@ import SONotification from "pages/Notifications/SONotification/SONotification";
 import ViewLineItem from "pages/SOModule/SupplyOrderDetails/View/ViewLineItem";
 import QAOLApprovalCycle from "pages/QAOLApprovalCycle";
 import IOLDehradun from "pages/SummaryData/IOL/IOLDehradun";
+import AteDrilldownDashboard from "pages/SummaryData/IOL/drilldown-dashboard";
 import { Ballot, Home } from "@material-ui/icons";
 import { useNotification } from "context/notification";
 import { StyledListItem } from "./SuperAdminTreeView";
@@ -46,7 +47,10 @@ export default function InspectorTreeView() {
       id: 1,
       label: "Dashboard",
       header: true,
-      child: [{ id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> }],
+      child: [
+        { id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> },
+        { id: "ate-quality-drilldown", label: `Quality Analytics (Drilldown)`, Icon: InsertChartRoundedIcon, component: <AteDrilldownDashboard /> },
+      ],
     },
 
     {

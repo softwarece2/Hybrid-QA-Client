@@ -15,6 +15,7 @@ import ApprovalCycleSslip from "pages/ApprovalCycleOL/ApprovalCycleSslip.js";
 import SbuSoTable from "pages/SOModule/SupplyOrderDetails/SbuSO/SbuSoTable";
 import CameraMappingTable from "pages/VideoInspection/Sbu/CameraMappingTable.js";
 import IOLDehradun from "pages/SummaryData/IOL/IOLDehradun.js";
+import AteDrilldownDashboard from "pages/SummaryData/IOL/drilldown-dashboard";
 import DetailsINote from "pages/InspectorModule/INote/DetailsINote.js";
 import WarrantDetailsTable from "pages/SOModule/LineItemsDetails/WarrantDetailsTable.js";
 import WarrantCertificateTable from "pages/SOModule/LineItemsDetails/WarrantCertificateTable.js";
@@ -56,7 +57,10 @@ export default function HoSTreeView() {
       id: 1,
       label: "Dashboard",
       header: true,
-      child: [{ id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> }],
+      child: [
+        { id: 1, label: `Dashboard `, Icon: Home, component: <IOLDehradun /> },
+        { id: "ate-quality-drilldown", label: `Quality Analytics (Drilldown)`, Icon: Home, component: <AteDrilldownDashboard /> },
+      ],
     },
 
     {
